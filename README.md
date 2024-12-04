@@ -20,6 +20,8 @@ Run this workflow by selecting the 'kraken2' profile (see 'RUN COMMAND' section 
 
 * Reads trimming and QC with TrimGalore
 
+* Removing contaminants (e.g. human reads)
+
 * Kraken2
 
 /// ---------------------------------------- ///
@@ -49,6 +51,10 @@ All outputs are stored in the following subdirectories, within the project direc
 
 <pre>
 <b>project_dir</b>
+  │
+  ├── <b>cleaned_reads</b>
+  │
+  ├── <b>cleaning_stats</b>
   │
   ├── <b>fastqc_reports</b>
   │
@@ -86,6 +92,14 @@ nextflow run main.nf -profile [PROFILES] [VARIABLES]
 * **reads_manifest_path**: full path to reads manifest
 
 * **kraken_database_path**: full path to the Kraken2 database
+
+* **remove_contaminants**: whether to remove reads mapping to a contaminant species (e.g. human)
+
+* **contaminant_fasta**: path to fasta file for the contaminant species
+
+* **bwa_index_dir**: path to directory containing the BWA index for the contaminant species
+
+* **bwa_index_prefix**: prefix of BWA index file
 
 /// ---------------------------------------- ///
 
