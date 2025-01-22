@@ -4,7 +4,7 @@ process RemoveContaminants {
   
   label 'mapping'
 
-  publishDir "${projectDir}/cleaned_reads", mode: "copy", pattern: "*.fastq"
+  publishDir "${projectDir}/cleaned_reads", mode: "copy", pattern: "*_cleaned_{R1,R2}.fq.gz"
   publishDir "${projectDir}/cleaning_stats", mode: "copy", pattern: "*_mapping.log"
 
   input:
