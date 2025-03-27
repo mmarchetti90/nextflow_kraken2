@@ -6,6 +6,7 @@ process RemoveContaminants {
 
   publishDir "${projectDir}/cleaned_reads", mode: "copy", pattern: "*_cleaned_{R1,R2}.fq.gz"
   publishDir "${projectDir}/cleaning_stats", mode: "copy", pattern: "*_mapping.log"
+  publishDir "${projectDir}/contaminant_reads", mode: "copy", pattern: "*_contaminant_reads.bam"
 
   input:
   each path(reference_fasta)
@@ -14,6 +15,7 @@ process RemoveContaminants {
 
   output:
   tuple val(sample_id), path("${sample_id}_cleaned_R1.fq.gz"), path("{${sample_id}_cleaned_R2.fq.gz,mock.clean.fastq}"), emit: clean_reads
+  tuple val(sample_id), path("${sample_id}_contaminant_reads.bam"), emit: contaminant_reads
   path "${sample_id}_mapping.log", emit: mapping_reports
 
   """
@@ -37,7 +39,7 @@ process RemoveContaminants {
 
   fi
 
-  # Sort and convert to bam
+  # Sort
   samtools sort \
   -@ \$SLURM_CPUS_ON_NODE \
   -o mapped_coord_sorted.sam \
@@ -47,6 +49,14 @@ process RemoveContaminants {
   samtools flagstat \
   -@ \$SLURM_CPUS_ON_NODE \
   mapped_coord_sorted.sam > ${sample_id}_mapping.log
+
+  # Extract mapped reads (i.e. from the contaminant)
+  samtools view \
+  -@ \$SLURM_CPUS_ON_NODE \
+  -h \
+  -b \
+  -F 4 \
+  mapped_coord_sorted.sam > ${sample_id}_contaminant_reads.bam
 
   # Extract unmapped reads
   samtools view \
