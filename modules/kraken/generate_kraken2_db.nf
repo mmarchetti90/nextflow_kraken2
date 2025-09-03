@@ -1,7 +1,7 @@
 process GenerateKraken2DB {
 	
 	// Build a Kraken2 database with bacteria, fungi, viral, human complete genomes, and EuPathDB46 (eukaryotic pathogen genomes)
-  label 'kraken2'
+  label 'kraken2_db'
 
   publishDir "${projectDir}", mode: "copy", pattern: "standard_plus_eupath46"
 
@@ -55,9 +55,12 @@ process GenerateKraken2DB {
 
   done
 
-  # Build database
-  kraken2-build --build --threads ${SLURM_CPUS_ON_NODE} --db \${db_dir}
+  # Build Kraken2 database
+  kraken2-build --build --threads \${SLURM_CPUS_ON_NODE} --db \${db_dir}
 
+  # Build Bracken database
+  bracken-build -d \${db_dir} -t \${SLURM_CPUS_ON_NODE} -k 35
+  
   # Clean up
   kraken2-build --clean --db \${db_dir}
   """

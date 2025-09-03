@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.12.0
+FROM continuumio/miniconda3:24.9.2-0
 
 ### UPDATING CONDA ------------------------- ###
 
@@ -18,6 +18,7 @@ RUN conda install -y mamba
 # Installing packages
 RUN mamba install -y \
     bbmap=39.01 \
+    bracken=3.1 \
     kraken2=2.1.2 \
     seqtk=1.4 \
     wget && \

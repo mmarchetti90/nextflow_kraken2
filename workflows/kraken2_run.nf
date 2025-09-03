@@ -5,12 +5,14 @@ include { TrimFastQ } from '../modules/trimming/trimgalore.nf'
 include { BwaIndex } from '../modules/mapping/bwa_indexing.nf'
 include { RemoveContaminants } from '../modules/mapping/remove_contaminants.nf'
 include { Kraken } from '../modules/kraken/kraken.nf'
+include { Bracken as BrackenG } from '../modules/kraken/bracken.nf'
+include { Bracken as BrackenS } from '../modules/kraken/bracken.nf'
 
 workflow KRAKEN2 {
 
   // CREATING KRAKEN2 DB CHANNEL ---------- //
 
-  Channel.fromPath("${params.kraken_database_path}/*{kmer_distrib,k2d,txt,map}")
+  Channel.fromPath("${params.kraken_database_path}")
     .collect()
     .set{ kraken_database }
 
@@ -66,5 +68,13 @@ workflow KRAKEN2 {
 
   // Running Kraken2
   Kraken(kraken_database, kraken_input_reads)
+
+  // BRACKEN ------------------------------ //
+
+  // Running Bracken to quantify at genus level
+  BrackenG('G', kraken_database, Kraken.out.kraken_reports)
+
+  // Running Bracken to quantify at species level
+  BrackenS('S', kraken_database, Kraken.out.kraken_reports)
 
 }
